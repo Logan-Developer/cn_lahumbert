@@ -118,9 +118,9 @@ int main(int argc, char *argv[])
     }
 
     printf("IP addresses for %s:\n\n", argv[1]);
+    printf("IP Address\tFamily\n");
     
-    struct addrinfo *currentAddressInfo;
-    for (currentAddressInfo = addressInfo; currentAddressInfo != NULL; currentAddressInfo = currentAddressInfo->ai_next)
+    for (struct addrinfo *currentAddressInfo = addressInfo; currentAddressInfo != NULL; currentAddressInfo = currentAddressInfo->ai_next)
     {
         void *address;
         char ipAddress[INET6_ADDRSTRLEN];
@@ -138,7 +138,7 @@ int main(int argc, char *argv[])
 
         inet_ntop(currentAddressInfo->ai_family, address, ipAddress, sizeof(ipAddress));
 
-        printf("%s\n", ipAddress);
+        printf("%s\t%s\n", ipAddress, currentAddressInfo->ai_family == AF_INET ? "IPv4" : "IPv6");
     }
 
     free(addressInfo);

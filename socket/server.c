@@ -9,8 +9,10 @@
 
 int port;
 
-void checkArgs(int argc, char *argv[]) {
-    if (argc < 2) {
+void checkArgs(int argc, char *argv[])
+{
+    if (argc < 2)
+    {
         fprintf(stderr, "Usage: %s <port>\n", argv[0]);
         exit(1);
     }
@@ -18,7 +20,57 @@ void checkArgs(int argc, char *argv[]) {
     port = atoi(argv[1]);
 }
 
-int main(int argc, char *argv[]) {
+void handleEcho(int clientSocket)
+{
+    ssize_t sendSize;
+    ssize_t recvSize;
+
+    char buffer[256];
+    while (1)
+    {
+        // receive the message from the client
+        recvSize = read(clientSocket, buffer, sizeof(buffer));
+        if (recvSize < 0)
+        {
+            fprintf(stderr, "ERROR reading from socket\n");
+            exit(1);
+        }
+        if (recvSize == 0)
+        {
+            break;
+        }
+        printf("Message: %s\n", buffer);
+
+        if (strncmp(buffer, "close", 5) == 0)
+        {
+            // send goodbye message
+            sendSize = send(clientSocket, "goodbye", 7, 0);
+            if (sendSize < 0)
+            {
+                fprintf(stderr, "ERROR writing to socket\n");
+                exit(1);
+            }
+            break;
+        }
+        // send the message back to the client
+        sendSize = send(clientSocket, buffer, recvSize, 0);
+        if (sendSize < 0)
+        {
+            fprintf(stderr, "ERROR writing to socket\n");
+            exit(1);
+        }
+
+        // clear the buffer
+        memset(buffer, 0, sizeof(buffer));
+    }
+}
+
+void handleFileTransfer(int clientSocket)
+{
+}
+
+int main(int argc, char *argv[])
+{
     checkArgs(argc, argv);
 
     // create a socket
@@ -34,7 +86,8 @@ int main(int argc, char *argv[]) {
     int addressLength = sizeof(struct sockaddr_storage);
 
     serverSocket = socket(AF_INET, SOCK_STREAM, 0);
-    if (serverSocket < 0) {
+    if (serverSocket < 0)
+    {
         fprintf(stderr, "ERROR opening socket\n");
         exit(1);
     }
@@ -42,7 +95,8 @@ int main(int argc, char *argv[]) {
 
     // set socket options
     setSockOptResult = setsockopt(serverSocket, SOL_SOCKET, SO_REUSEADDR, &(int){1}, sizeof(int));
-    if (setSockOptResult < 0) {
+    if (setSockOptResult < 0)
+    {
         fprintf(stderr, "ERROR setting socket options\n");
         exit(1);
     }
@@ -50,24 +104,29 @@ int main(int argc, char *argv[]) {
     // bind the socket to an address
     serverAddress.sin_addr.s_addr = INADDR_ANY; // listen to any address
     serverAddress.sin_family = AF_INET;         // use IPv4
-    serverAddress.sin_port = htons(port);     // listen to the port provided
+    serverAddress.sin_port = htons(port);       // listen to the port provided
 
     bindResult = bind(serverSocket, (struct sockaddr *)&serverAddress, sizeof(serverAddress));
-    if (bindResult < 0) {
+    if (bindResult < 0)
+    {
         fprintf(stderr, "ERROR on binding\n");
         exit(1);
     }
 
     // listen for connections
     listenResult = listen(serverSocket, 5);
-    if (listenResult < 0) {
+    if (listenResult < 0)
+    {
         fprintf(stderr, "ERROR on listen\n");
         exit(1);
     }
 
+    printf("Listening for connections on port %d\n", port);
+
     // accept connections
     clientSocket = accept(serverSocket, (struct sockaddr *)&clientAddress, (socklen_t *)&addressLength);
-    if (clientSocket < 0) {
+    if (clientSocket < 0)
+    {
         fprintf(stderr, "ERROR on accept\n");
         exit(1);
     }
@@ -82,31 +141,47 @@ int main(int argc, char *argv[]) {
         int mode;
         recvSize = read(clientSocket, &mode, sizeof(mode));
         printf("Mode: %d\n", mode);
-        if (recvSize < 0) {
+        if (recvSize < 0)
+        {
             fprintf(stderr, "ERROR reading from socket\n");
             exit(1);
         }
 
-        if (mode == 1) {
+        if (mode == 1)
+        {
             sendSize = send(clientSocket, &(int){0}, sizeof(int), 0);
-            if (sendSize < 0) {
+            if (sendSize < 0)
+            {
                 fprintf(stderr, "ERROR writing to socket\n");
                 exit(1);
             }
-            break;
+            handleEcho(clientSocket);
         }
-        else if (mode == 2) {
+        else if (mode == 2)
+        {
             sendSize = send(clientSocket, &(int){0}, sizeof(int), 0);
-            if (sendSize < 0) {
+            if (sendSize < 0)
+            {
                 fprintf(stderr, "ERROR writing to socket\n");
                 exit(1);
             }
-            break;
+            handleFileTransfer(clientSocket);
         }
-        else {
+        else
+        {
             sendSize = send(clientSocket, &(int){-1}, sizeof(int), 0);
             // ask the client to send the mode again
             continue;
+        }
+
+        // go back to listening for connections
+        printf("Connection closed\n");
+        printf("Listening for connections on port %d\n", port);
+        clientSocket = accept(serverSocket, (struct sockaddr *)&clientAddress, (socklen_t *)&addressLength);
+        if (clientSocket < 0)
+        {
+            fprintf(stderr, "ERROR on accept\n");
+            exit(1);
         }
     }
 }

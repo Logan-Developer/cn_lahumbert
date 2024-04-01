@@ -27,6 +27,53 @@ void checkArgs(int argc, char *argv[])
     }
 }
 
+void handleEcho(int clientSocket)
+{
+    ssize_t sendSize;
+    ssize_t recvSize;
+    int closeConnection = 0;
+
+    char buffer[256];
+    while (1)
+    {
+        // ask user for input
+        printf("Enter message: ");
+        fgets(buffer, sizeof(buffer), stdin);
+
+        // send the message to the server
+        sendSize = send(clientSocket, buffer, strlen(buffer), 0);
+        if (sendSize < 0)
+        {
+            fprintf(stderr, "Error sending message to server\n");
+            return;
+        }
+
+        // receive the message from the server
+        recvSize = recv(clientSocket, buffer, sizeof(buffer), 0);
+        if (recvSize < 0)
+        {
+            fprintf(stderr, "Error receiving message from server\n");
+            return;
+        }
+
+        // print the message from the server
+        printf("Server: %s\n", buffer);
+
+        // check if the server wants to close the connection
+        if (strncmp(buffer, "goodbye", 7) == 0)
+        {
+            break;
+        }
+
+        // clear the buffer
+        memset(buffer, 0, sizeof(buffer));
+    }
+}
+
+void handleFileTransfer(int clientSocket)
+{
+}
+
 int main(int argc, char *argv[])
 {
     checkArgs(argc, argv);
@@ -88,6 +135,17 @@ int main(int argc, char *argv[])
             break;
         }
     }
+
+    if (mode == 1)
+    {
+        handleEcho(clientSocket);
+    }
+    else if (mode == 2)
+    {
+        handleFileTransfer(clientSocket);
+    }
+
+    printf("Connection closed\n");
 
     // close the socket
     close(clientSocket);

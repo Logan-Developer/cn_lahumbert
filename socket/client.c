@@ -129,6 +129,13 @@ void handleFileTransfer(int clientSocket)
     }
 
     fclose(file);
+    // check if the file exists
+    if (access("fileRecv.txt", F_OK) != 0)
+    {
+        fprintf(stderr, "Error writing file\n");
+        return;
+    }
+
     printf("File successfully received\n");
     printf("Total read size: %ld / %ld\n", totalReadSize, fileSize);
 }

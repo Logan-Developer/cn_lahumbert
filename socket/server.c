@@ -14,6 +14,7 @@ void checkArgs(int argc, char *argv[])
     if (argc < 2)
     {
         fprintf(stderr, "Usage: %s <port>\n", argv[0]);
+
         exit(1);
     }
 
@@ -67,6 +68,70 @@ void handleEcho(int clientSocket)
 
 void handleFileTransfer(int clientSocket)
 {
+    char* fileName = "file.txt";
+    FILE *file = fopen(fileName, "r");
+    if (file == NULL)
+    {
+        fprintf(stderr, "ERROR opening file\n");
+        exit(1);
+    }
+
+    fseek(file, 0, SEEK_END);
+    size_t fileLength = ftell(file);
+    if (fileLength == -1)
+    {
+        fprintf(stderr, "ERROR getting file length\n");
+        exit(1);
+    }
+
+    rewind(file);
+
+    printf("File length: %ld\n", fileLength);
+
+    // send the file length to the client
+    ssize_t sendSize = send(clientSocket, &fileLength, sizeof(fileLength), 0);
+    if (sendSize < 0)
+    {
+        fprintf(stderr, "ERROR writing to socket\n");
+        exit(1);
+    }
+
+    // wait for the client to acknowledge the file length
+    int sizeFromClient;
+    ssize_t recvSize = recv(clientSocket, &sizeFromClient, sizeof(sizeFromClient), 0);
+    if (recvSize < 0)
+    {
+        fprintf(stderr, "ERROR reading from socket\n");
+        exit(1);
+    }
+
+    if (sizeFromClient <= 0)
+    {
+        fprintf(stderr, "ERROR receiving file size from client\n");
+        exit(1);
+    }
+
+    char fileBuffer[256];
+    // read and send the file in chunks
+    while (1)
+    {
+        size_t bytesRead = fread(fileBuffer, 1, sizeof(fileBuffer), file);
+        if (bytesRead == 0)
+        {
+            break;
+        }
+
+        ssize_t sendSize = send(clientSocket, fileBuffer, bytesRead, 0);
+        if (sendSize < 0)
+        {
+            fprintf(stderr, "ERROR writing to socket\n");
+            exit(1);
+        }
+
+        memset(fileBuffer, 0, sizeof(fileBuffer));
+    }
+
+    fclose(file);
 }
 
 int main(int argc, char *argv[])

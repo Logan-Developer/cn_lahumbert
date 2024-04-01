@@ -72,6 +72,65 @@ void handleEcho(int clientSocket)
 
 void handleFileTransfer(int clientSocket)
 {
+    ssize_t sendSize;
+    ssize_t recvSize;
+
+    size_t fileSize;
+    
+    // receive the file size from the server
+    recvSize = recv(clientSocket, &fileSize, sizeof(fileSize), 0);
+
+    if (recvSize < 0)
+    {
+        fprintf(stderr, "Error receiving file size from server\n");
+        return;
+    }
+
+    printf("File length: %ld\n", fileSize);
+
+    // send the file size to the server
+    sendSize = send(clientSocket, &fileSize, sizeof(fileSize), 0);
+    if (sendSize < 0)
+    {
+        fprintf(stderr, "Error sending file size to server\n");
+        return;
+    }
+
+    // receive the file from the server
+    FILE *file = fopen("fileRecv.txt", "w");
+    if (file == NULL)
+    {
+        fprintf(stderr, "Error opening file\n");
+        return;
+    }
+
+    size_t fileReadSize;
+    size_t totalReadSize = 0;
+
+    char buffer[256];
+
+    while (totalReadSize < fileSize)
+    {
+        recvSize = recv(clientSocket, buffer, sizeof(buffer), 0);
+        if (recvSize < 0)
+        {
+            fprintf(stderr, "Error receiving file from server\n");
+            return;
+        }
+
+        fileReadSize = fwrite(buffer, 1, recvSize, file);
+        if (fileReadSize != recvSize)
+        {
+            fprintf(stderr, "Error writing to file\n");
+            return;
+        }
+
+        totalReadSize += fileReadSize;
+    }
+
+    fclose(file);
+    printf("File successfully received\n");
+    printf("Total read size: %ld / %ld\n", totalReadSize, fileSize);
 }
 
 int main(int argc, char *argv[])

@@ -3,15 +3,39 @@
 #include <netinet/in.h>
 #include <unistd.h>
 #include <string.h>
+#include <stdlib.h>
+
+int port;
+int mode;
+
+void checkArgs(int argc, char *argv[])
+{
+    if (argc < 3)
+    {
+        fprintf(stderr, "Usage: %s <port> <mode>\n", argv[0]);
+        fprintf(stderr, "Mode: 1 (echo), 2 (file transfer)\n");
+        exit(1);
+    }
+
+    port = atoi(argv[1]);
+    mode = atoi(argv[2]);
+
+    if (mode != 1 && mode != 2)
+    {
+        fprintf(stderr, "Mode not supported (1: echo, 2: file transfer)\n");
+        exit(1);
+    }
+}
 
 int main(int argc, char *argv[])
 {
+    checkArgs(argc, argv);
+
     // Create a socket
     int clientSocket;
     int connectResult;
 
     struct sockaddr_in serverAddress;
-    const int port = 1234;
 
     clientSocket = socket(AF_INET, SOCK_STREAM, 0);
     if (clientSocket < 0)
@@ -38,14 +62,6 @@ int main(int argc, char *argv[])
     ssize_t recvResult;
     while (1)
     {
-        // get mode from user (1: echo, 2: file transfer)
-        int mode;
-        printf("Enter mode (1: echo, 2: file transfer): ");
-        scanf("%d", &mode);
-
-        // print mode
-        printf("Mode: %d\n", mode);
-
         // send mode to server
         sendResult = send(clientSocket, &mode, sizeof(mode), 0);
         if (sendResult < 0)
@@ -63,9 +79,12 @@ int main(int argc, char *argv[])
             return 4;
         }
         
-        if (serverResponse != -1)
+        if (serverResponse == -1)
         {
             fprintf(stderr, "Mode not supported (1: echo, 2: file transfer)\n");
+        }
+        else
+        {
             break;
         }
     }

@@ -7,16 +7,19 @@
 #include <string.h>
 #include <arpa/inet.h>
 
+int port;
+
 void checkArgs(int argc, char *argv[]) {
     if (argc < 2) {
-        fprintf(stderr, "ERROR, no port provided\n");
+        fprintf(stderr, "Usage: %s <port>\n", argv[0]);
         exit(1);
     }
+
+    port = atoi(argv[1]);
 }
 
 int main(int argc, char *argv[]) {
     checkArgs(argc, argv);
-    int portno = atoi(argv[1]);
 
     // create a socket
     int serverSocket;
@@ -47,7 +50,7 @@ int main(int argc, char *argv[]) {
     // bind the socket to an address
     serverAddress.sin_addr.s_addr = INADDR_ANY; // listen to any address
     serverAddress.sin_family = AF_INET;         // use IPv4
-    serverAddress.sin_port = htons(portno);     // listen to the port provided
+    serverAddress.sin_port = htons(port);     // listen to the port provided
 
     bindResult = bind(serverSocket, (struct sockaddr *)&serverAddress, sizeof(serverAddress));
     if (bindResult < 0) {

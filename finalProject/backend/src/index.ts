@@ -1,7 +1,8 @@
 import express from 'express';
 import session from 'express-session';
-import { jsonwebtoken, passport } from './modules/authentication';
+import { createUser, findUser, jsonwebtoken, passport } from './modules/authentication';
 import cors from 'cors';
+import bcrypt from 'bcryptjs';
 
 const app = express();
 const port = 3000; // You can change the port if needed
@@ -32,6 +33,28 @@ app.post('/login', passport.authenticate('local'), (req, res) => {
     res.json({ token });
   } else {
     res.status(401).json({ message: 'Invalid credentials' }); 
+  }
+});
+
+app.post('/register', async (req, res) => {
+  const { username, password } = req.body;
+
+  try {
+    // 1. Check if user exists (Modify according to how you check for existing users)
+    const existingUser = await findUser(username); 
+    if (existingUser) {
+      return res.status(400).json({ message: 'Username already taken' });
+    }
+
+    // 3. Create new user (adapt to your User model) 
+    const newUser = await createUser(username, password);
+
+    // 4. Respond with success 
+    res.json({ message: 'User registered successfully' });
+
+  } catch(error) {
+    console.error(error); 
+    res.status(500).json({ message: 'Registration error' });
   }
 });
 

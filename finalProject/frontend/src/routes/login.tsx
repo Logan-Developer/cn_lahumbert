@@ -57,6 +57,7 @@ const Login = () => {
           />
         </div>
         <button type="submit">Login</button>
+        <button onClick={() => window.location.href = '/register'}>Register</button>
       </form>
     </div>
   );

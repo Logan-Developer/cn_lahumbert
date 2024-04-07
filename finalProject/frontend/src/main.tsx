@@ -5,6 +5,7 @@ import { BrowserRouter, Navigate, Route, Routes } from 'react-router-dom';
 import Login from './routes/login';
 import Dashboard from './routes/dashboard';
 import { createRoot } from 'react-dom/client';
+import Register from './routes/register';
 
 const isAuthenticated = () => {
   // Logic to check if a valid JWT token exists
@@ -26,6 +27,7 @@ function App() {
     <BrowserRouter>
       <Routes>
         <Route path="/login" element={<Login />} />
+        <Route path="/register" element={<Register />} />
         <Route
           path="/"
           element={

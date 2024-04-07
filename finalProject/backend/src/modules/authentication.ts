@@ -53,7 +53,7 @@ interface User {
     {
       id: 1,
       username: 'user1',
-      password: bcrypt.hashSync('password1', 10)
+      password: bcrypt.hashSync('password1', 8),
     },
   ];
   
@@ -62,4 +62,19 @@ interface User {
     return users.find(user => user.username === username);
   };
 
-export { passport, jsonwebtoken, findUser };
+  const findUserById = (id: number): User | undefined => {
+    return users.find(user => user.id === id);
+  }
+
+  const createUser = (username: string, password: string): User => {
+    console.log('Creating new user:', username, password);
+    const newUser = {
+      id: users.length + 1,
+      username,
+      password: bcrypt.hashSync(password, 8),
+    };
+    users.push(newUser);
+    return newUser;
+  }
+
+export { passport, jsonwebtoken, findUser, createUser };

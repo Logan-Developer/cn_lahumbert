@@ -7,6 +7,9 @@ import Dashboard from './routes/dashboard';
 import { createRoot } from 'react-dom/client';
 import Register from './routes/register';
 
+import 'bootstrap/dist/css/bootstrap.min.css';
+import 'bootstrap/dist/js/bootstrap.bundle.min';
+
 const isAuthenticated = () => {
   // Logic to check if a valid JWT token exists
   const token = localStorage.getItem('jwtToken');

@@ -59,7 +59,7 @@ function App() {
             </ProtectedRoute>
           }
         />
-        {/* ... other routes */}
+        <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
     </BrowserRouter>
   );

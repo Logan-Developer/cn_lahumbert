@@ -10,7 +10,7 @@ int showIPv6 = 1;
 
 void printHelp()
 {
-    fprintf(stderr, "Usage: getipaddr <hostname> [-u]\n");
+    fprintf(stderr, "Usage: getipaddr <hostname> [options]\n");
     fprintf(stderr, "Options:\n");
     fprintf(stderr, "  -u: UDP instead of TCP\n");
     fprintf(stderr, "  -v [4|6]: IPV4 or IPV6\n");

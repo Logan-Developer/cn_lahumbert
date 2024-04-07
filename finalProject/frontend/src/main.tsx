@@ -1,6 +1,5 @@
 import React from 'react'
 import './index.css'
-import { render } from 'react-dom';
 import { BrowserRouter, Navigate, Route, Routes } from 'react-router-dom';
 import Login from './routes/login';
 import Dashboard from './routes/dashboard';
@@ -24,13 +23,34 @@ const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
   return children;
 };
 
+const LoginRegiserRedirect = ({ children }: { children: React.ReactNode }) => {
+  if (isAuthenticated()) {
+    return <Navigate to="/" replace />;
+  }
+  return children;
+}
+
 function App() {
 
   return (
     <BrowserRouter>
       <Routes>
-        <Route path="/login" element={<Login />} />
-        <Route path="/register" element={<Register />} />
+        <Route
+          path="/login"
+          element={
+            <LoginRegiserRedirect>
+              <Login />
+            </LoginRegiserRedirect>
+          }
+        />
+        <Route
+          path="/register"
+          element={
+            <LoginRegiserRedirect>
+              <Register />
+            </LoginRegiserRedirect>
+          }
+        />
         <Route
           path="/"
           element={

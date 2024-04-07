@@ -1,5 +1,6 @@
 # binaries
-*.out
+getipaddr/*.out
+socket/*.out
 
 # vscode
 .vscode/

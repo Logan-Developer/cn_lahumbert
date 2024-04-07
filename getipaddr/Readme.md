@@ -1,5 +1,10 @@
 # Small C program that uses the getaddrinfo() function to get the IP addresses associated with a domain name.
 
+## How to build
+```bash
+make
+```
+
 ## Usage
 ```bash
 make

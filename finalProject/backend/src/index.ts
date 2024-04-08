@@ -1,6 +1,6 @@
 import express from 'express';
 import session from 'express-session';
-import { createUser, findUser, jsonwebtoken, passport } from './modules/authentication';
+import { createUser, findUser, jsonwebtoken, passport, initPassport } from './modules/authentication';
 import cors from 'cors';
 import bcrypt from 'bcryptjs';
 
@@ -20,6 +20,7 @@ app.use(session({
 
 // Initialize Passport
 app.use(passport.initialize());
+app.use(passport.session());
 
 // A basic route
 app.get('/', (req, res) => {
@@ -56,6 +57,22 @@ app.post('/register', async (req, res) => {
     console.error(error); 
     res.status(500).json({ message: 'Registration error' });
   }
+});
+
+// Middleware to protect routes
+const protectRoute = (req: any, res: any, next: any) => {
+  console.log('Checking authentication');
+  console.log(req.isAuthenticated());
+  if (req.isAuthenticated()) {
+    next();
+  } else {
+    res.status(401).json({ message: 'Unauthorized' });
+  }
+}
+
+app.get('/get-files', passport.authenticate('jwt', { session: false }), protectRoute, (req, res) => {
+  // Logic to get files
+  res.status(200).json({files: ['file1.txt', 'file2.txt']});
 });
 
 // Start the server

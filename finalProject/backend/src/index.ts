@@ -86,6 +86,17 @@ app.get('/get-files', passport.authenticate('jwt', { session: false }), protectR
   });
 });
 
+app.get('/get-files/:subdirectory', passport.authenticate('jwt', { session: false }), protectRoute, (req, res) => {
+  const subdirectory = req.params.subdirectory;
+
+  fs.getUserFiles(req.user.username, subdirectory).then((files: MyFile[]) => {
+    res.json({ files: files});
+  }, (error: any) => {
+    console.error('Error fetching files:', error);
+    res.status(500).json({ message: 'Error fetching files' });
+  });
+});
+
 // Start the server
 app.listen(port, () => {
   console.log(`Server listening at http://localhost:${port}`);

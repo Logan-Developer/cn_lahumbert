@@ -1,14 +1,25 @@
+import { get } from "http";
+
 const userDirectory = __dirname + '/../../userData';
+
+enum MyFileTypes {
+    GENERICFILE = 'file',
+    IMAGE = 'image',
+    VIDEO = 'video',
+    AUDIO = 'audio',
+    PDF = 'pdf',
+    DIRECTORY = 'directory'
+}
 
 class MyFile {
     name: string;
     path: string;
-    isDirectory: boolean;
+    type: MyFileTypes;
 
-    constructor(name: string, path: string, isDirectory: boolean) {
+    constructor(name: string, path: string) {
         this.name = name;
         this.path = path;
-        this.isDirectory = isDirectory;
+        this.type = this.determineFileType(name);
     }
 
     getName() {
@@ -19,8 +30,36 @@ class MyFile {
         return this.path;
     }
 
-    getIsDirectory() {
-        return this.isDirectory;
+    getType() {
+        return this.type;
+    }
+
+    private determineFileType(name: string): MyFileTypes {
+        const extension = name.split('.').pop();
+
+        if (extension) {
+            switch (extension.toLowerCase()) {
+                case 'jpg':
+                case 'jpeg':
+                case 'png':
+                case 'gif':
+                    return MyFileTypes.IMAGE;
+                case 'mp4':
+                case 'avi':
+                case 'mov':
+                    return MyFileTypes.VIDEO;
+                case 'mp3':
+                case 'wav':
+                case 'flac':
+                    return MyFileTypes.AUDIO;
+                case 'pdf':
+                    return MyFileTypes.PDF;
+                default:
+                    return MyFileTypes.GENERICFILE;
+            }
+        } else {
+            return MyFileTypes.DIRECTORY;
+        }
     }
 }
 

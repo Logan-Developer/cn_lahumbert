@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
+import { Col, Container, Row, Table } from 'react-bootstrap';
 
 const FileList: React.FC = () => {
     const [files, setFiles] = useState<string[]>([]);
@@ -24,12 +25,22 @@ const FileList: React.FC = () => {
 
     return (
         <div>
-            <h2>File List</h2>
-            <ul>
-                {files.map((file, index) => (
-                    <li key={index}>{file.name}</li>
-                ))}
-            </ul>
+            <Table striped bordered hover> 
+                <thead>
+                    <tr>
+                        <th>Filename</th> 
+                        <th>File Type</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {files.map((file, index) => (
+                        <tr key={index}>
+                            <td>{file.name}</td>
+                            <td>{file.type}</td>
+                        </tr>
+                    ))}
+                </tbody>
+            </Table>
         </div>
     );
 };

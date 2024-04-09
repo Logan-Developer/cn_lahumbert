@@ -20,9 +20,7 @@ passport.use(new JWTStrategy({
   jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
   secretOrKey: 'your_jwt_secret' 
 }, (jwtPayload, done) => {
-  console.log('JWT payload:', jwtPayload);
   const user = findUser(jwtPayload.username);
-  console.log('User:', user);
   if (user) {
     return done(null, user);
   } else {

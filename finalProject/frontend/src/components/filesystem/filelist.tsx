@@ -27,7 +27,7 @@ const FileList: React.FC = () => {
             <h2>File List</h2>
             <ul>
                 {files.map((file, index) => (
-                    <li key={index}>{file}</li>
+                    <li key={index}>{file.name}</li>
                 ))}
             </ul>
         </div>

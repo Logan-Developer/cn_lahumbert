@@ -3,6 +3,9 @@ import session from 'express-session';
 import { createUser, findUser, jsonwebtoken, passport, initPassport } from './modules/authentication';
 import cors from 'cors';
 import bcrypt from 'bcryptjs';
+import {MyFileSystem, MyFile} from './modules/filesystem';
+
+const fs = new MyFileSystem();
 
 const app = express();
 const port = 3000; // You can change the port if needed
@@ -49,20 +52,23 @@ app.post('/register', async (req, res) => {
 
     // 3. Create new user (adapt to your User model) 
     const newUser = await createUser(username, password);
+    if (!newUser) {
+      return res.status(500).json({ message: 'Registration error' });
+    }
+
+    fs.createUserDataFolder(username);
 
     // 4. Respond with success 
-    res.json({ message: 'User registered successfully' });
+    return res.json({ message: 'User registered successfully' });
 
   } catch(error) {
     console.error(error); 
-    res.status(500).json({ message: 'Registration error' });
+    return res.status(500).json({ message: 'Registration error' });
   }
 });
 
 // Middleware to protect routes
 const protectRoute = (req: any, res: any, next: any) => {
-  console.log('Checking authentication');
-  console.log(req.isAuthenticated());
   if (req.isAuthenticated()) {
     next();
   } else {
@@ -71,8 +77,13 @@ const protectRoute = (req: any, res: any, next: any) => {
 }
 
 app.get('/get-files', passport.authenticate('jwt', { session: false }), protectRoute, (req, res) => {
-  // Logic to get files
-  res.status(200).json({files: ['file1.txt', 'file2.txt']});
+
+  fs.getUserFiles(req.user.username, null).then((files: MyFile[]) => {
+    res.json({ files: files});
+  }, (error: any) => {
+    console.error('Error fetching files:', error);
+    res.status(500).json({ message: 'Error fetching files' });
+  });
 });
 
 // Start the server

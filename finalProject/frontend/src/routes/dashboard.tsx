@@ -4,7 +4,8 @@ import { useState } from "react";
 
 const Dashboard = () => {
   const [fileName, setFileName] = useState<string>('');
-  const [imageUrl, setImageUrl] = useState<string>('');
+  const [fileType, setFileType] = useState<string>(''); // ['image', 'pdf'
+  const [fileUrl, setFileUrl] = useState<string>('');
 
   const handleLogout = () => {
     localStorage.removeItem('jwtToken');
@@ -12,10 +13,16 @@ const Dashboard = () => {
   };
 
   const sendFileToParent = (data: any) => {
-    if (data.type === 'image') {
-      setImageUrl(`data:image/png;base64,${data.data}`);
+    switch (data.type) {
+      case 'image':
+        setFileUrl(`data:image/png;base64,${data.data}`);
+      break;
+      case 'pdf':
+        setFileUrl(`data:application/pdf;base64,${data.data}`);
+      break;
     }
     setFileName(data.name);
+    setFileType(data.type);
   }
 
   return (
@@ -36,15 +43,16 @@ const Dashboard = () => {
 
       <FileList sendFileToParent={sendFileToParent} />
 
-      <Modal show={!!imageUrl} onHide={() => setImageUrl('')}>
+      <Modal show={!!fileUrl} onHide={() => setFileUrl('')}>
         <Modal.Header closeButton>
-          <Modal.Title>Image Preview</Modal.Title>
+          <Modal.Title>File Preview</Modal.Title>
         </Modal.Header>
         <Modal.Body>
-          <img src={imageUrl} alt={fileName} style={{ width: '100%' }} />
+          {fileType === 'image' && <img src={fileUrl} alt={fileName} />}
+          {fileType === 'pdf' && <embed src={fileUrl} width="100%" height="500px" />}
         </Modal.Body>
         <Modal.Footer>
-          <a href={imageUrl} download>{fileName}</a>
+          <a href={fileUrl} download>{fileName}</a>
         </Modal.Footer>
       </Modal>
 

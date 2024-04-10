@@ -47,10 +47,12 @@ class MyFile {
                 case 'mp4':
                 case 'avi':
                 case 'mov':
+                case 'webm':
                     return MyFileTypes.VIDEO;
                 case 'mp3':
                 case 'wav':
                 case 'flac':
+                case 'ogg':
                     return MyFileTypes.AUDIO;
                 case 'pdf':
                     return MyFileTypes.PDF;

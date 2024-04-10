@@ -13,12 +13,25 @@ const Dashboard = () => {
   };
 
   const sendFileToParent = (data: any) => {
+    const fileRealType = data.name.split('.').pop();
     switch (data.type) {
       case 'image':
-        setFileUrl(`data:image/png;base64,${data.data}`);
+        setFileUrl(`data:image/${fileRealType};base64,${data.data}`);
       break;
       case 'pdf':
         setFileUrl(`data:application/pdf;base64,${data.data}`);
+      break;
+      case 'video':
+        setFileUrl(`data:video/${fileRealType};base64,${data.data}`);
+      break;
+      case 'audio':
+        setFileUrl(`data:audio/${fileRealType};base64,${data.data}`);
+      break;
+      default:
+        const a = document.createElement('a');
+        a.href = `data:application/octet-stream;base64,${data.data}`;
+        a.download = data.name;
+        a.click();
       break;
     }
     setFileName(data.name);
@@ -47,12 +60,14 @@ const Dashboard = () => {
         <Modal.Header closeButton>
           <Modal.Title>File Preview</Modal.Title>
         </Modal.Header>
-        <Modal.Body>
-          {fileType === 'image' && <img src={fileUrl} alt={fileName} />}
+        <Modal.Body className="text-center">
+          {fileType === 'image' && <img src={fileUrl} alt={fileName} width={400} height={400} />}
           {fileType === 'pdf' && <embed src={fileUrl} width="100%" height="500px" />}
+          {fileType === 'video' && <video width="400" height="400" controls autoPlay src={fileUrl} />}
+          {fileType === 'audio' && <audio controls autoPlay src={fileUrl} />}
         </Modal.Body>
         <Modal.Footer>
-          <a href={fileUrl} download>{fileName}</a>
+          <a href={fileUrl} download={fileName} className="btn btn-primary">Download</a>
         </Modal.Footer>
       </Modal>
 

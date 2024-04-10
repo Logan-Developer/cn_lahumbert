@@ -12,30 +12,29 @@ const Dashboard = () => {
     window.location.href = '/login';
   };
 
-  const sendFileToParent = (data: any) => {
-    const fileRealType = data.name.split('.').pop();
-    switch (data.type) {
+  const sendFileToParent = (name: string, type: string, realType: string, data: any) => {
+    switch (type) {
       case 'image':
-        setFileUrl(`data:image/${fileRealType};base64,${data.data}`);
-      break;
+        setFileUrl(`data:image/${realType};base64,${data.data}`);
+        break;
       case 'pdf':
         setFileUrl(`data:application/pdf;base64,${data.data}`);
-      break;
+        break;
       case 'video':
-        setFileUrl(`data:video/${fileRealType};base64,${data.data}`);
-      break;
+        setFileUrl(URL.createObjectURL(data));
+        break;
       case 'audio':
-        setFileUrl(`data:audio/${fileRealType};base64,${data.data}`);
-      break;
+        setFileUrl(`data:audio/${realType};base64,${data.data}`);
+        break;
       default:
         const a = document.createElement('a');
         a.href = `data:application/octet-stream;base64,${data.data}`;
-        a.download = data.name;
+        a.download = name;
         a.click();
-      break;
+        break;
     }
-    setFileName(data.name);
-    setFileType(data.type);
+    setFileName(name);
+    setFileType(type);
   }
 
   return (
@@ -63,8 +62,7 @@ const Dashboard = () => {
         <Modal.Body className="text-center">
           {fileType === 'image' && <img src={fileUrl} alt={fileName} width={400} height={400} />}
           {fileType === 'pdf' && <embed src={fileUrl} width="100%" height="500px" />}
-          {fileType === 'video' && <video width="400" height="400" controls autoPlay src={fileUrl} />}
-          {fileType === 'audio' && <audio controls autoPlay src={fileUrl} />}
+          {fileType === 'video' && <video id="video" width="400" height="400" controls autoPlay src={fileUrl} />}
         </Modal.Body>
         <Modal.Footer>
           <a href={fileUrl} download={fileName} className="btn btn-primary">Download</a>

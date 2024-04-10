@@ -39,12 +39,22 @@ const FileList: React.FC = (props: any) => {
             const encodedPath = encodeURIComponent(path);
             const response = await axios.get(`/get-file/${encodedPath}`, {
                 headers: {
-                    Authorization: `Bearer ${localStorage.getItem('jwtToken')}`
-                }
+                    Authorization: `Bearer ${localStorage.getItem('jwtToken')}`,
+                    Range: 'bytes=0-',
+                    Accept: 'video/webp;charset=UTF-8'
+                },
+                responseType: 'blob'
             });
+
+            const fileInfo = files.find((file) => file.path === path);
+
+            if (!fileInfo) {
+                return;
+            }
+
             const data = response.data;
 
-            props.sendFileToParent(data);
+            props.sendFileToParent(fileInfo.name, fileInfo.type, fileInfo.name.split('.').pop(), data);
         } catch (error) {
             console.error('Error fetching file:', error);
         }

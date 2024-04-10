@@ -131,6 +131,14 @@ class MyFileSystem {
     getFileData(file: MyFile) {
         return this.fs.readFileSync(file.path, { encoding: 'base64' });
     }
+
+    getFileSize(file: MyFile) {
+        return this.fs.statSync(file.path).size;
+    }
+
+    createReadStream(file: MyFile, start: number, end: number) {
+        return this.fs.createReadStream(file.path, { start, end });
+    }
 }
 
 export { MyFileSystem, MyFile };

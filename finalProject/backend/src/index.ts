@@ -109,6 +109,42 @@ app.get('/get-file/:filePath', passport.authenticate('jwt', { session: false }),
       if (file.type === 'directory') {
         return res.status(400).json({ message: 'Directories cannot be downloaded' });
       }
+
+      console.log('file:', file);
+
+      if (file.type === 'video') {
+        res.setHeader('Content-Type', 'video/mp4');
+
+        // Stream the file
+        const range = req.headers.range;
+
+        if (!range) {
+          res.status(400).send('Requires Range header');
+          return;
+        }
+
+        const videoSize = fs.getFileSize(file);
+
+        const CHUNK_SIZE = 10 ** 6; // 1MB
+        const start = Number(range.replace(/\D/g, ''));
+        const end = Math.min(start + CHUNK_SIZE, videoSize - 1);
+
+        const headers = {
+          'Content-Range': `bytes ${start}-${end}/${videoSize}`,
+          'Accept-Ranges': 'bytes',
+          'Content-Length': end - start + 1,
+          'Content-Type': 'video/' + file.name.split('.').pop(),
+        };
+
+        console.log('headers:', headers);
+
+        res.writeHead(206, headers);
+
+        const videoStream = fs.createReadStream(file, start, end);
+        videoStream.pipe(res);
+
+        return;
+      }
       
       const response = {
         name: file.name,

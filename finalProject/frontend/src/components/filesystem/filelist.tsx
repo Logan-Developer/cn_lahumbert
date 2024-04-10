@@ -36,6 +36,12 @@ const FileList: React.FC = (props: any) => {
         }
 
         try {
+            const fileInfo = files.find((file) => file.path === path);
+
+            if (!fileInfo) {
+                return;
+            }
+
             const encodedPath = encodeURIComponent(path);
             const response = await axios.get(`/get-file/${encodedPath}`, {
                 headers: {
@@ -43,14 +49,8 @@ const FileList: React.FC = (props: any) => {
                     Range: 'bytes=0-',
                     Accept: 'video/webp;charset=UTF-8'
                 },
-                responseType: 'blob'
+                responseType: fileInfo.type === 'video' ? 'blob' : undefined
             });
-
-            const fileInfo = files.find((file) => file.path === path);
-
-            if (!fileInfo) {
-                return;
-            }
 
             const data = response.data;
 

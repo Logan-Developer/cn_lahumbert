@@ -1,11 +1,22 @@
-import { Container, Nav, Navbar } from "react-bootstrap";
+import { Container, Modal, Nav, Navbar } from "react-bootstrap";
 import FileList from "../components/filesystem/filelist";
+import { useState } from "react";
 
 const Dashboard = () => {
+  const [fileName, setFileName] = useState<string>('');
+  const [imageUrl, setImageUrl] = useState<string>('');
+
   const handleLogout = () => {
     localStorage.removeItem('jwtToken');
     window.location.href = '/login';
   };
+
+  const sendFileToParent = (data: any) => {
+    if (data.type === 'image') {
+      setImageUrl(`data:image/png;base64,${data.data}`);
+    }
+    setFileName(data.name);
+  }
 
   return (
     <Container fluid="true">
@@ -23,7 +34,19 @@ const Dashboard = () => {
 
       <h1>Dashboard</h1>
 
-      <FileList />
+      <FileList sendFileToParent={sendFileToParent} />
+
+      <Modal show={!!imageUrl} onHide={() => setImageUrl('')}>
+        <Modal.Header closeButton>
+          <Modal.Title>Image Preview</Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
+          <img src={imageUrl} alt={fileName} style={{ width: '100%' }} />
+        </Modal.Body>
+        <Modal.Footer>
+          <a href={imageUrl} download>{fileName}</a>
+        </Modal.Footer>
+      </Modal>
 
     </Container>
   );

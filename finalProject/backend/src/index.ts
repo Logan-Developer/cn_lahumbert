@@ -97,6 +97,28 @@ app.get('/get-files/:subdirectory', passport.authenticate('jwt', { session: fals
   });
 });
 
+app.get('/get-file/:filePath', passport.authenticate('jwt', { session: false }), protectRoute, (req, res) => {
+  const filePath = req.params.filePath;
+
+  fs.getFile(req.user.username, filePath).then((file: MyFile | null) => {
+    if (file) {
+      const response = {
+        name: file.name,
+        type: file.type,
+        data: fs.getFileData(file)
+      };
+
+      res.json(response);
+
+    } else {
+      res.status(404).json({ message: 'File not found' });
+    }
+  }, (error: any) => {
+    console.error('Error fetching file:', error);
+    res.status(500).json({ message: 'Error fetching file' });
+  });
+});
+
 // Start the server
 app.listen(port, () => {
   console.log(`Server listening at http://localhost:${port}`);

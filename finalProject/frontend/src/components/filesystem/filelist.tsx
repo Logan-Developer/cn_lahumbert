@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
-import { Col, Container, Row, Table } from 'react-bootstrap';
+import { Table } from 'react-bootstrap';
 
-const FileList: React.FC = () => {
+const FileList: React.FC = (props: any) => {
     const [files, setFiles] = useState<string[]>([]);
 
     useEffect(() => {
@@ -23,6 +23,23 @@ const FileList: React.FC = () => {
         fetchFiles();
     }, []);
 
+    const handleClick = async (event: React.MouseEvent<HTMLAnchorElement>) => {
+
+        const path = event.currentTarget.id;
+
+        try {
+            const response = await axios.get(`/get-file/${path}`, {
+                headers: {
+                    Authorization: `Bearer ${localStorage.getItem('jwtToken')}`
+                }
+            });
+            const data = response.data;
+            props.sendFileToParent(data);
+        } catch (error) {
+            console.error('Error fetching file:', error);
+        }
+    };
+
     return (
         <div>
             <Table striped bordered hover> 
@@ -35,7 +52,7 @@ const FileList: React.FC = () => {
                 <tbody>
                     {files.map((file, index) => (
                         <tr key={index}>
-                            <td>{file.name}</td>
+                            <td><a id={file.path} onClick={handleClick}>{file.name}</a></td>
                             <td>{file.type}</td>
                         </tr>
                     ))}

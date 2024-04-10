@@ -19,7 +19,7 @@ class MyFile {
     constructor(name: string, path: string) {
         this.name = name;
         this.path = path;
-        this.type = this.determineFileType(name);
+        this.type = this.determineFileType();
     }
 
     getName() {
@@ -34,8 +34,8 @@ class MyFile {
         return this.type;
     }
 
-    private determineFileType(name: string): MyFileTypes {
-        const extension = name.split('.').pop();
+    determineFileType(): MyFileTypes {
+        const extension = this.name.split('.').pop();
 
         if (extension) {
             switch (extension.toLowerCase()) {
@@ -91,8 +91,7 @@ class MyFileSystem {
             const filePath = this.path.join(directory, file);
             const relativePath = this.path.relative(userDir, filePath);
 
-            const isDirectory = this.fs.statSync(filePath).isDirectory();
-            fileList.push(new MyFile(file, relativePath, isDirectory));
+            fileList.push(new MyFile(file, relativePath));
         }
 
         return fileList;
@@ -106,6 +105,18 @@ class MyFileSystem {
         }
     }
 
+    async getFile(username: string, filePath: string): Promise<MyFile | null> {
+        const userDir = this.path.join(userDirectory, username);
+        const file = this.path.join(userDir, filePath);
+
+        if (!this.fs.existsSync(file)) {
+            return null;
+        }
+
+        const completePath = userDir + '/' + filePath;
+        return new MyFile(this.path.basename(file), completePath);
+    }
+
     async createDirectory(username: string, directory: string) {
         const userDir = this.path.join(userDirectory, username);
         const newDirectory = this.path.join(userDir, directory);
@@ -113,6 +124,10 @@ class MyFileSystem {
         if (!this.fs.existsSync(newDirectory)) {
             this.fs.mkdirSync(newDirectory, { recursive: true });
         }
+    }
+
+    getFileData(file: MyFile) {
+        return this.fs.readFileSync(file.path, { encoding: 'base64' });
     }
 }
 

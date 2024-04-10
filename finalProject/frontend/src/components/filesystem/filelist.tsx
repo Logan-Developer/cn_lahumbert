@@ -1,31 +1,39 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
-import { Table } from 'react-bootstrap';
+import { Button, Col, Row, Table } from 'react-bootstrap';
 
 const FileList: React.FC = (props: any) => {
     const [files, setFiles] = useState<string[]>([]);
+    const [subdirectory, setSubdirectory] = useState<string>('/');
+
+    const fetchFiles = async () => {
+        try {
+            const response = await axios.get('/get-files' + subdirectory, {
+                headers: {
+                    Authorization: `Bearer ${localStorage.getItem('jwtToken')}`
+                }
+            });
+            const data = response.data;
+            setFiles(data.files);
+        } catch (error) {
+            console.error('Error fetching files:', error);
+        }
+    };
+
 
     useEffect(() => {
-        const fetchFiles = async () => {
-            try {
-                const response = await axios.get('/get-files', {
-                    headers: {
-                        Authorization: `Bearer ${localStorage.getItem('jwtToken')}`
-                    }
-                });
-                const data = response.data;
-                setFiles(data.files);
-            } catch (error) {
-                console.error('Error fetching files:', error);
-            }
-        };
-
         fetchFiles();
-    }, []);
+    }, [subdirectory]);
 
-    const handleClick = async (event: React.MouseEvent<HTMLAnchorElement>) => {
+    const handleClickFile = async (event: React.MouseEvent<HTMLAnchorElement>) => {
 
         const path = event.currentTarget.id;
+
+        // If the file is a directory, update the subdirectory state
+        if (files.find((file) => file.path === path)?.type === 'directory') {
+            setSubdirectory(subdirectory + path + '/');
+            return;
+        }
 
         try {
             const response = await axios.get(`/get-file/${path}`, {
@@ -34,25 +42,41 @@ const FileList: React.FC = (props: any) => {
                 }
             });
             const data = response.data;
+
             props.sendFileToParent(data);
         } catch (error) {
             console.error('Error fetching file:', error);
         }
     };
 
+    const handleGoBack = () => {
+        const path = subdirectory.split('/');
+        path.pop();
+        path.pop();
+        setSubdirectory(path.join('/') + '/');
+    }
+
     return (
         <div>
-            <Table striped bordered hover> 
+            <Row>
+                <Col xs={2}>
+                    <Button onClick={() => handleGoBack()}>Go Back</Button>
+                </Col>
+                <Col xs={6}>
+                    <p>Current directory: {subdirectory}</p>
+                </Col>
+            </Row>
+            <Table striped bordered hover>
                 <thead>
                     <tr>
-                        <th>Filename</th> 
+                        <th>Filename</th>
                         <th>File Type</th>
                     </tr>
                 </thead>
                 <tbody>
                     {files.map((file, index) => (
                         <tr key={index}>
-                            <td><a id={file.path} onClick={handleClick}>{file.name}</a></td>
+                            <td><a id={file.path} onClick={handleClickFile}>{file.name}</a></td>
                             <td>{file.type}</td>
                         </tr>
                     ))}

@@ -100,8 +100,16 @@ app.get('/get-files/:subdirectory', passport.authenticate('jwt', { session: fals
 app.get('/get-file/:filePath', passport.authenticate('jwt', { session: false }), protectRoute, (req, res) => {
   const filePath = req.params.filePath;
 
+  if (!filePath) {
+    return res.status(400).json({ message: 'Invalid file path' });
+  }
+
   fs.getFile(req.user.username, filePath).then((file: MyFile | null) => {
     if (file) {
+      if (file.type === 'directory') {
+        return res.status(400).json({ message: 'Directories cannot be downloaded' });
+      }
+      
       const response = {
         name: file.name,
         type: file.type,

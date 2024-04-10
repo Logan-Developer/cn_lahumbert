@@ -16,10 +16,10 @@ class MyFile {
     path: string;
     type: MyFileTypes;
 
-    constructor(name: string, path: string) {
+    constructor(name: string, path: string, isDirectory: boolean = false) {
         this.name = name;
         this.path = path;
-        this.type = this.determineFileType();
+        this.type = isDirectory ? MyFileTypes.DIRECTORY : this.determineFileType();
     }
 
     getName() {
@@ -37,30 +37,30 @@ class MyFile {
     determineFileType(): MyFileTypes {
         const extension = this.name.split('.').pop();
 
-        if (extension) {
-            switch (extension.toLowerCase()) {
-                case 'jpg':
-                case 'jpeg':
-                case 'png':
-                case 'gif':
-                    return MyFileTypes.IMAGE;
-                case 'mp4':
-                case 'avi':
-                case 'mov':
-                case 'webm':
-                    return MyFileTypes.VIDEO;
-                case 'mp3':
-                case 'wav':
-                case 'flac':
-                case 'ogg':
-                    return MyFileTypes.AUDIO;
-                case 'pdf':
-                    return MyFileTypes.PDF;
-                default:
-                    return MyFileTypes.GENERICFILE;
-            }
-        } else {
-            return MyFileTypes.DIRECTORY;
+        if (!extension) {
+            return MyFileTypes.GENERICFILE;
+        }
+
+        switch (extension.toLowerCase()) {
+            case 'jpg':
+            case 'jpeg':
+            case 'png':
+            case 'gif':
+                return MyFileTypes.IMAGE;
+            case 'mp4':
+            case 'avi':
+            case 'mov':
+            case 'webm':
+                return MyFileTypes.VIDEO;
+            case 'mp3':
+            case 'wav':
+            case 'flac':
+            case 'ogg':
+                return MyFileTypes.AUDIO;
+            case 'pdf':
+                return MyFileTypes.PDF;
+            default:
+                return MyFileTypes.GENERICFILE;
         }
     }
 }
@@ -80,8 +80,6 @@ class MyFileSystem {
         const userDir = this.path.join(userDirectory, username);
         const directory = subdirectory ? this.path.join(userDir, subdirectory) : userDir;
 
-        console.log('Getting files from:', directory);
-
         if (!this.fs.existsSync(directory)) {
             return [];
         }
@@ -93,7 +91,7 @@ class MyFileSystem {
             const filePath = this.path.join(directory, file);
             const relativePath = this.path.relative(userDir, filePath);
 
-            fileList.push(new MyFile(file, relativePath));
+            fileList.push(new MyFile(file, relativePath, this.fs.lstatSync(filePath).isDirectory()));
         }
 
         return fileList;
@@ -111,12 +109,14 @@ class MyFileSystem {
         const userDir = this.path.join(userDirectory, username);
         const file = this.path.join(userDir, filePath);
 
+        console.log('file:', file);
+
         if (!this.fs.existsSync(file)) {
             return null;
         }
 
         const completePath = userDir + '/' + filePath;
-        return new MyFile(this.path.basename(file), completePath);
+        return new MyFile(this.path.basename(file), completePath, this.fs.lstatSync(file).isDirectory());
     }
 
     async createDirectory(username: string, directory: string) {

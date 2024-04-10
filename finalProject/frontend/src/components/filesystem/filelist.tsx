@@ -36,7 +36,8 @@ const FileList: React.FC = (props: any) => {
         }
 
         try {
-            const response = await axios.get(`/get-file/${path}`, {
+            const encodedPath = encodeURIComponent(path);
+            const response = await axios.get(`/get-file/${encodedPath}`, {
                 headers: {
                     Authorization: `Bearer ${localStorage.getItem('jwtToken')}`
                 }

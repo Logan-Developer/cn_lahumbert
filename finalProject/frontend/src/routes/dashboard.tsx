@@ -12,13 +12,13 @@ const Dashboard = () => {
     window.location.href = '/login';
   };
 
-  const sendFileToParent = (name: string, type: string, realType: string, data: any) => {
+  const sendFileToParent = (name: string, type: string, data: any) => {
     switch (type) {
       case 'image':
         setFileUrl(URL.createObjectURL(data));
         break;
       case 'pdf':
-        setFileUrl(`data:application/pdf;base64,${data.data}`);
+        setFileUrl(URL.createObjectURL(data));
         break;
       case 'video':
         setFileUrl(URL.createObjectURL(data));
@@ -28,7 +28,7 @@ const Dashboard = () => {
         break;
       default:
         const a = document.createElement('a');
-        a.href = `data:application/octet-stream;base64,${data.data}`;
+        a.href = URL.createObjectURL(data);
         a.download = name;
         a.click();
         break;

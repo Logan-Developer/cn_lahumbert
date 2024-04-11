@@ -191,14 +191,24 @@ app.get('/get-file/:filePath', passport.authenticate('jwt', { session: false }),
         res.end(image, 'binary');
         return;
       }
-      
-      const response = {
-        name: file.name,
-        type: file.type,
-        data: fs.getFileData(file)
-      };
 
-      res.json(response);
+      if (file.type === 'pdf') {
+        res.setHeader('Content-Type', 'application/pdf');
+
+        const pdf = fs.getFileData(file, 'base64');
+        res.writeHead(200);
+        res.end(pdf, 'base64');
+        return;
+      }
+
+      // send the file
+      const data = fs.getFileData(file, 'binary');
+      res.writeHead(200, {
+        'Content-Type': 'application/octet-stream',
+        'Content-Disposition': `attachment; filename=${file.name}`,
+        'Content-Length': data.length,
+      });
+      res.end(data);
 
     } else {
       res.status(404).json({ message: 'File not found' });

@@ -128,8 +128,8 @@ class MyFileSystem {
         }
     }
 
-    getFileData(file: MyFile) {
-        return this.fs.readFileSync(file.path, { encoding: 'base64' });
+    getFileData(file: MyFile, encoding: string) {
+        return this.fs.readFileSync(file.path, { encoding });
     }
 
     getFileSize(file: MyFile) {

@@ -24,7 +24,7 @@ const Dashboard = () => {
         setFileUrl(URL.createObjectURL(data));
         break;
       case 'audio':
-        setFileUrl(`data:audio/${realType};base64,${data.data}`);
+        setFileUrl(URL.createObjectURL(data));
         break;
       default:
         const a = document.createElement('a');
@@ -63,6 +63,7 @@ const Dashboard = () => {
           {fileType === 'image' && <img src={fileUrl} alt={fileName} width={400} height={400} />}
           {fileType === 'pdf' && <embed src={fileUrl} width="100%" height="500px" />}
           {fileType === 'video' && <video id="video" width="400" height="400" controls autoPlay src={fileUrl} />}
+          {fileType === 'audio' && <audio id="audio" controls autoPlay src={fileUrl} />}
         </Modal.Body>
         <Modal.Footer>
           <a href={fileUrl} download={fileName} className="btn btn-primary">Download</a>

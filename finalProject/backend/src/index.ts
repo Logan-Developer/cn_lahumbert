@@ -113,7 +113,7 @@ app.get('/get-file/:filePath', passport.authenticate('jwt', { session: false }),
       console.log('file:', file);
 
       if (file.type === 'video') {
-        res.setHeader('Content-Type', 'video/mp4');
+        res.setHeader('Content-Type', 'video/' + file.name.split('.').pop());
 
         // Stream the file
         const range = req.headers.range;
@@ -142,6 +142,43 @@ app.get('/get-file/:filePath', passport.authenticate('jwt', { session: false }),
 
         const videoStream = fs.createReadStream(file, start, end);
         videoStream.pipe(res);
+
+        return;
+      }
+
+      if (file.type === 'audio') {
+        res.setHeader('Content-Type', 'audio/' + file.name.split('.').pop());
+
+        // Stream the file
+        const range = req.headers.range;
+
+        if (!range) {
+          res.status(400).send('Requires Range header');
+          return;
+        }
+
+        const audioSize = fs.getFileSize(file);
+
+        const CHUNK_SIZE = 10 ** 6; // 1MB
+        const start = Number(range.replace(/\D/g, ''));
+        const end = Math.min(start + CHUNK_SIZE, audioSize - 1);
+
+        console.log('start:', start);
+        console.log('end:', end);
+
+        const headers = {
+          'Content-Range': `bytes ${start}-${end}/${audioSize}`,
+          'Accept-Ranges': 'bytes',
+          'Content-Length': end - start + 1,
+          'Content-Type': 'audio/' + file.name.split('.').pop(),
+        };
+
+        console.log('headers:', headers);
+
+        res.writeHead(206, headers);
+
+        const audioStream = fs.createReadStream(file, start, end);
+        audioStream.pipe(res);
 
         return;
       }

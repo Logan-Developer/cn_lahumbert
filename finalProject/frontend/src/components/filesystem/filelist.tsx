@@ -49,7 +49,7 @@ const FileList: React.FC = (props: any) => {
                     Range: 'bytes=0-',
                     Accept: 'video/webp;charset=UTF-8'
                 },
-                responseType: fileInfo.type === 'video' ? 'blob' : undefined
+                responseType: fileInfo.type === 'video' || fileInfo.type === 'audio' ? 'blob' : 'json'
             });
 
             const data = response.data;

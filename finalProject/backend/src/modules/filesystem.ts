@@ -139,6 +139,10 @@ class MyFileSystem {
     createReadStream(file: MyFile, start: number, end: number) {
         return this.fs.createReadStream(file.path, { start, end });
     }
+
+    readImage(file: MyFile) {
+        return this.fs.readFileSync(file.path);
+    }
 }
 
 export { MyFileSystem, MyFile };

@@ -182,6 +182,15 @@ app.get('/get-file/:filePath', passport.authenticate('jwt', { session: false }),
 
         return;
       }
+
+      if (file.type === 'image') {
+        res.setHeader('Content-Type', 'image/' + file.name.split('.').pop());
+
+        const image = fs.readImage(file);
+        res.writeHead(200);
+        res.end(image, 'binary');
+        return;
+      }
       
       const response = {
         name: file.name,

@@ -15,7 +15,7 @@ const Dashboard = () => {
   const sendFileToParent = (name: string, type: string, realType: string, data: any) => {
     switch (type) {
       case 'image':
-        setFileUrl(`data:image/${realType};base64,${data.data}`);
+        setFileUrl(URL.createObjectURL(data));
         break;
       case 'pdf':
         setFileUrl(`data:application/pdf;base64,${data.data}`);

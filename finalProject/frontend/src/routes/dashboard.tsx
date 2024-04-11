@@ -15,20 +15,20 @@ const Dashboard = () => {
   const sendFileToParent = (name: string, type: string, realType: string, data: any) => {
     switch (type) {
       case 'image':
-        setFileUrl(`data:image/${realType};base64,${data}`);
+        setFileUrl(`data:image/${realType};base64,${data.data}`);
         break;
       case 'pdf':
-        setFileUrl(`data:application/pdf;base64,${data}`);
+        setFileUrl(`data:application/pdf;base64,${data.data}`);
         break;
       case 'video':
         setFileUrl(URL.createObjectURL(data));
         break;
       case 'audio':
-        setFileUrl(`data:audio/${realType};base64,${data}`);
+        setFileUrl(`data:audio/${realType};base64,${data.data}`);
         break;
       default:
         const a = document.createElement('a');
-        a.href = `data:application/octet-stream;base64,${data}`;
+        a.href = `data:application/octet-stream;base64,${data.data}`;
         a.download = name;
         a.click();
         break;

@@ -8,8 +8,10 @@ make
 ## Usage
 ### Server
 ```bash
-./server.out <port>
+./server.out <port> [File name]
 ```
+
+The file name is used in file transfer mode. If the file name is not provided, the server will use the default file name 'file.txt'.
 
 ### Client
 ```bash

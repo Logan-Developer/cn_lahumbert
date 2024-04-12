@@ -8,14 +8,24 @@
 #include <arpa/inet.h>
 
 int port;
+char *fileName;
 
 void checkArgs(int argc, char *argv[])
 {
     if (argc < 2)
     {
-        fprintf(stderr, "Usage: %s <port>\n", argv[0]);
-
+        fprintf(stderr, "Usage: %s <port> [File name]\n", argv[0]);
+        fprintf(stderr, "The file name is used for file transfer mode, if not provided, the default file name is file.txt\n");
         exit(1);
+    }
+
+    if (argc == 3)
+    {
+        fileName = argv[2];
+    }
+    else
+    {
+        fileName = "file.txt";
     }
 
     port = atoi(argv[1]);
@@ -68,7 +78,6 @@ void handleEcho(int clientSocket)
 
 void handleFileTransfer(int clientSocket)
 {
-    char* fileName = "file.txt";
     FILE *file = fopen(fileName, "r");
     if (file == NULL)
     {

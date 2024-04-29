@@ -1,0 +1,104 @@
+\documentclass{beamer}
+
+\usetheme{Boadilla}
+\usecolortheme{beaver}
+
+\usepackage{graphicx}
+\graphicspath{ {./images/} }
+
+\title{Online Files Manager}
+\subtitle{CSCI 484 - Computer Networks}
+\author{Logan Humbert}
+\institute{Colorado Mesa University}
+\date{May 8, 2024}
+\titlegraphic{\includegraphics[width=2cm]{cmu_logo}}
+
+\begin{document}
+	\frame{\titlepage}
+	
+	\begin{frame}
+		\frametitle{Table of Contents}
+		\tableofcontents
+	\end{frame}
+	
+	\section{Introduction}
+	\begin{frame}
+		\frametitle{Introduction}
+		
+		\begin{alertblock}{My project}
+			Online Files Manager
+			\linebreak Store and retrieve files via web Interface
+		\end{alertblock}
+	\end{frame}
+	
+	\section{Requirements}
+	\begin{frame}
+		\frametitle{Requirements}
+		
+		\begin{alertblock}{An unauthenticated user must be able to}
+			\begin{itemize}
+				\item Register a new account
+				\item Login to his existing account
+			\end{itemize}
+		\end{alertblock}
+		
+		\begin{alertblock}{An authenticated user must be able to}
+			\begin{itemize}
+				\item Upload files
+				\item Create folders
+				\item View his images/videos/musics directly from the app
+				\item Download his files
+			\end{itemize}
+		\end{alertblock}
+		
+		A user, connected or not must not be able to access files belonging to other users
+	\end{frame}
+	
+	\section{Development}
+	\subsection{Technologies used}
+	\begin{frame}
+		\frametitle{Development}
+		\framesubtitle{Technologies used}
+		\begin{alertblock}{Backend}
+			\begin{itemize}
+				\item NodeJS - Run JavaScript Server side
+				\item Express - Backend web Framework
+				\item Passport - Authentication middleware
+			\end{itemize}
+		\end{alertblock}
+		
+		\begin{alertblock}{Frontend}
+			React - JavaScript library to build UI based on components
+		\end{alertblock}
+	\end{frame}
+	
+	\section{Demo}
+	\begin{frame}
+		\frametitle{Demo}
+	\end{frame}
+	
+	\section{Conclusion}
+	\begin{frame}
+		\frametitle{Conclusion}
+		
+		\begin{alertblock}{Objectives fulfilled?}
+			Requirements correctly integrated in final product
+		\end{alertblock}
+		
+		\begin{alertblock}{How to improve the app?}
+			\begin{itemize}
+				\item Be able to download folders as zip
+				\item Administrator mode to manage user access
+			\end{itemize}
+		\end{alertblock}
+	\end{frame}
+	
+	\begin{frame}
+		\frametitle{The End}
+		
+		\centering
+		Thank you for your attention!
+		\linebreak
+		Do you have any question?
+	\end{frame}
+\end{document}

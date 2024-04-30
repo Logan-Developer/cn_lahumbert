@@ -1,0 +1,25 @@
+title Access File
+
+Client->Server:Send path to the file
+
+Server->Server:Extract token from authorization header
+
+Server->Server:Extract username from token
+
+Server->Server:Retrieve user from username
+
+alt User not found
+  Server->Client:Send error message
+  
+  else User found
+  Server->Server: Check if file exists at relative path
+  
+  alt File not found
+    Server->Client:Send error message
+  else File found
+    Server->Server: Generate Token
+    Server->Client: Send token
+    Client->Client: Save token
+    Client->Client: Redirect to home page
+  end
+end

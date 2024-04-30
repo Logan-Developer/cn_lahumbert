@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.141592653-2.6-1.40.25 (MiKTeX 24.1) (preloaded format=pdflatex 2024.4.29)  29 APR 2024 16:19
+This is pdfTeX, Version 3.141592653-2.6-1.40.25 (MiKTeX 24.1) (preloaded format=pdflatex 2024.4.29)  29 APR 2024 17:22
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
@@ -1016,7 +1016,7 @@ Package rerunfilecheck Info: File `presentation_cn.out' has not changed.
  ) 
 Here is how much of TeX's memory you used:
  21789 strings out of 474486
- 431823 string characters out of 5741867
+ 431829 string characters out of 5741867
  1939542 words of memory out of 5000000
  43615 multiletter control sequences out of 15000+600000
  560494 words of font info for 44 fonts, out of 8000000 for 9000
@@ -1027,7 +1027,7 @@ Here is how much of TeX's memory you used:
 blic/amsfonts/cm/cmss12.pfb><C:/Users/lahumbert/AppData/Local/Programs/MiKTeX/f
 onts/type1/public/amsfonts/cm/cmss8.pfb><C:/Users/lahumbert/AppData/Local/Progr
 ams/MiKTeX/fonts/type1/public/amsfonts/cm/cmss9.pfb>
-Output written on presentation_cn.pdf (8 pages, 241170 bytes).
+Output written on presentation_cn.pdf (8 pages, 240936 bytes).
 PDF statistics:
  397 PDF objects out of 1000 (max. 8388607)
  23 named destinations out of 1000 (max. 500000)

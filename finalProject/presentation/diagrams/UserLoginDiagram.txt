@@ -1,0 +1,23 @@
+title User Login
+
+Client->Server:Send username and password
+
+Server->Server:Search User in database based on username
+
+alt User not found
+  Server->Client:Send error message
+  Client->Client:Display error message
+  
+  else User found
+  Server->Server: Compare password with hash
+  
+  alt Hash KO
+    Server->Client:Send error message
+    Client->Client:Display error message
+  else Hash OK
+    Server->Server: Generate Token
+    Server->Client: Send token
+    Client->Client: Save token
+    Client->Client: Redirect to home page
+  end
+end

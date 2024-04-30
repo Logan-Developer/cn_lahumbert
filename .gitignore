@@ -4,3 +4,5 @@ socket/*.out
 
 # vscode
 .vscode/
+
+finalProject/node/

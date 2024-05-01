@@ -13,12 +13,17 @@ const port = 3000; // You can change the port if needed
 app.use(cors());
 app.use(express.json());
 
+// upload file
+const multer  = require('multer');
+
+const upload = multer({ dest: 'uploads/' });
+
 // Session Configuration
 app.use(session({
   secret: 'your_strong_secret_string', // Replace with a secure string
   resave: false, // Option to optimize session updates
   saveUninitialized: false, // Option to optimize session creation
-  // Add additional options like 'cookie' for security, as needed 
+  // Add additional options like 'cookie' for security, as needed
 }));
 
 // Initialize Passport
@@ -36,7 +41,7 @@ app.post('/login', passport.authenticate('local'), (req, res) => {
     const token = jsonwebtoken.sign({ username: req.user.username }, 'your_jwt_secret');
     res.json({ token });
   } else {
-    res.status(401).json({ message: 'Invalid credentials' }); 
+    res.status(401).json({ message: 'Invalid credentials' });
   }
 });
 
@@ -45,12 +50,12 @@ app.post('/register', async (req, res) => {
 
   try {
     // 1. Check if user exists (Modify according to how you check for existing users)
-    const existingUser = await findUser(username); 
+    const existingUser = await findUser(username);
     if (existingUser) {
       return res.status(400).json({ message: 'Username already taken' });
     }
 
-    // 3. Create new user (adapt to your User model) 
+    // 3. Create new user (adapt to your User model)
     const newUser = await createUser(username, password);
     if (!newUser) {
       return res.status(500).json({ message: 'Registration error' });
@@ -58,11 +63,11 @@ app.post('/register', async (req, res) => {
 
     fs.createUserDataFolder(username);
 
-    // 4. Respond with success 
+    // 4. Respond with success
     return res.json({ message: 'User registered successfully' });
 
   } catch(error) {
-    console.error(error); 
+    console.error(error);
     return res.status(500).json({ message: 'Registration error' });
   }
 });
@@ -219,7 +224,27 @@ app.get('/get-file/:filePath', passport.authenticate('jwt', { session: false }),
   });
 });
 
+app.post('/upload-file', upload.single('file'), passport.authenticate('jwt', { session: false }), protectRoute, (req, res) => {
+  const file = req.file;
+
+  if (!file) {
+    return res.status(400).json({ message: 'No file uploaded' });
+  }
+
+  // filePath: keep only subfolder and filename
+  let filePath = file.path.split('/').slice(1).join('/');
+
+  // replace original file name with the new file name
+  filePath = filePath.split('/').slice(0, -1).join('/') + '/' + req.file.originalname;
+
+  const fileName = req.file.originalname;
+
+  fs.saveFile(req.user.username, new MyFile(fileName, filePath, false), fs.getFileData(file, 'binary'));
+
+  res.json({ message: 'File uploaded successfully' });
+});
+
 // Start the server
-app.listen(port, () => {
+app.listen(port, '127.0.0.1', () => {
   console.log(`Server listening at http://localhost:${port}`);
 });

@@ -143,6 +143,15 @@ class MyFileSystem {
     readImage(file: MyFile) {
         return this.fs.readFileSync(file.path);
     }
+
+    saveFile(username: string, file: MyFile, data: any) {
+        const userDir = this.path.join(userDirectory, username);
+        const filePath = this.path.join(userDir, file.path);
+
+        this.fs.mkdirSync(this.path.dirname(filePath), { recursive: true });
+
+        this.fs.writeFileSync(filePath, data);
+    }
 }
 
 export { MyFileSystem, MyFile };

@@ -66,6 +66,32 @@ const FileList: React.FC = (props: any) => {
         setSubdirectory(path.join('/') + '/');
     }
 
+    const handleUpload = () => {
+        // Open a dialog to select a file
+        const input = document.createElement('input');
+        input.type = 'file';
+        input.accept = '*/*';
+        input.name = 'file';
+        input.onchange = async (event: any) => {
+            const file = event.target.files[0];
+            const formData = new FormData();
+            formData.append('file', file);
+
+            try {
+                await axios.post('/upload-file', formData, {
+                    headers: {
+                        Authorization: `Bearer ${localStorage.getItem('jwtToken')}`,
+                        'Content-Type': 'multipart/form-data'
+                    }
+                });
+                fetchFiles();
+            } catch (error) {
+                console.error('Error uploading file:', error);
+            }
+        };
+        input.click();
+    };
+
     return (
         <div>
             <Row>
@@ -74,6 +100,9 @@ const FileList: React.FC = (props: any) => {
                 </Col>
                 <Col xs={6}>
                     <p>Current directory: {subdirectory}</p>
+                </Col>
+                <Col xs={4} className="text-right">
+                    <Button onClick={() => handleUpload()}>Upload</Button>
                 </Col>
             </Row>
             <Table striped bordered hover>

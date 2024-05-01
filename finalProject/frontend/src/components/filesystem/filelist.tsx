@@ -92,6 +92,28 @@ const FileList: React.FC = (props: any) => {
         input.click();
     };
 
+    const handleCreateFolder = async () => {
+        const folderName = prompt('Enter the folder name:');
+
+        if (!folderName) {
+            return;
+        }
+
+        try {
+            await axios.post('/create-folder', {
+                folderName: folderName,
+                subdirectory: subdirectory
+            }, {
+                headers: {
+                    Authorization: `Bearer ${localStorage.getItem('jwtToken')}`
+                }
+            });
+            fetchFiles();
+        } catch (error) {
+            console.error('Error creating folder:', error);
+        }
+    };
+
     return (
         <div>
             <Row>
@@ -101,8 +123,11 @@ const FileList: React.FC = (props: any) => {
                 <Col xs={6}>
                     <p>Current directory: {subdirectory}</p>
                 </Col>
-                <Col xs={4} className="text-right">
+                <Col xs={2}>
                     <Button onClick={() => handleUpload()}>Upload</Button>
+                </Col>
+                <Col xs={2}>
+                    <Button onClick={() => handleCreateFolder()}>Create Folder</Button>
                 </Col>
             </Row>
             <Table striped bordered hover>

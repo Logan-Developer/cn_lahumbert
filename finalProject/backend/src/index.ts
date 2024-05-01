@@ -244,6 +244,18 @@ app.post('/upload-file', upload.single('file'), passport.authenticate('jwt', { s
   res.json({ message: 'File uploaded successfully' });
 });
 
+app.post('/create-folder', passport.authenticate('jwt', { session: false }), protectRoute, (req, res) => {
+  const { folderName, subdirectory } = req.body;
+
+  if (!folderName) {
+    return res.status(400).json({ message: 'Invalid folder name' });
+  }
+
+  fs.createDirectory(req.user.username, subdirectory + folderName);
+
+  res.json({ message: 'Folder created successfully' });
+});
+
 // Start the server
 app.listen(port, '127.0.0.1', () => {
   console.log(`Server listening at http://localhost:${port}`);

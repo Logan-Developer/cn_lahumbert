@@ -144,13 +144,12 @@ class MyFileSystem {
         return this.fs.readFileSync(file.path);
     }
 
-    saveFile(username: string, file: MyFile, data: any) {
+    moveFile(username: string, oldPath: string, newPath: string) {
         const userDir = this.path.join(userDirectory, username);
-        const filePath = this.path.join(userDir, file.path);
+        const oldFile = this.path.join(userDir, oldPath);
+        const newFile = this.path.join(userDir, newPath);
 
-        this.fs.mkdirSync(this.path.dirname(filePath), { recursive: true });
-
-        this.fs.writeFileSync(filePath, data);
+        this.fs.renameSync(oldFile, newFile);
     }
 }
 

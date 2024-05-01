@@ -79,7 +79,7 @@ const FileList: React.FC = (props: any) => {
             formData.append('file', file);
 
             try {
-                await axios.post('/upload', formData, {
+                await axios.post('/upload-file' + subdirectory, formData, {
                     headers: {
                         'Content-Type': 'multipart/form-data',
                         Authorization: `Bearer ${localStorage.getItem('jwtToken')}`

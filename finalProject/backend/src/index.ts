@@ -233,7 +233,8 @@ app.post('/upload-file', passport.authenticate('jwt', { session: false }), prote
 
   const fileName = req.file.originalname;
 
-  fs.saveFile(req.user.username, new MyFile(fileName, fileName, false), fs.getFileData(file, 'binary'));
+  // move the file from the uploads folder to the user's folder
+  fs.moveFile(req.user.username, '../../uploads/' + file.filename, fileName);
 
   res.json({ message: 'File uploaded successfully' });
 });

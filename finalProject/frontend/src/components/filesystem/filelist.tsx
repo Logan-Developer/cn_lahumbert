@@ -73,15 +73,16 @@ const FileList: React.FC = (props: any) => {
         input.accept = '*/*';
         input.name = 'file';
         input.onchange = async (event: any) => {
+            // upload file as binary
             const file = event.target.files[0];
             const formData = new FormData();
             formData.append('file', file);
 
             try {
-                await axios.post('/upload-file', formData, {
+                await axios.post('/upload', formData, {
                     headers: {
-                        Authorization: `Bearer ${localStorage.getItem('jwtToken')}`,
-                        'Content-Type': 'multipart/form-data'
+                        'Content-Type': 'multipart/form-data',
+                        Authorization: `Bearer ${localStorage.getItem('jwtToken')}`
                     }
                 });
                 fetchFiles();

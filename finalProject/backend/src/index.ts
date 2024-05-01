@@ -224,18 +224,29 @@ app.get('/get-file/:filePath', passport.authenticate('jwt', { session: false }),
   });
 });
 
-app.post('/upload-file', upload.single('file'), passport.authenticate('jwt', { session: false }), protectRoute, (req, res) => {
+app.post('/upload-file', passport.authenticate('jwt', { session: false }), protectRoute, upload.single('file'), (req, res) => {
   const file = req.file;
 
   if (!file) {
     return res.status(400).json({ message: 'No file uploaded' });
   }
 
-  // filePath: keep only subfolder and filename
-  let filePath = file.path.split('/').slice(1).join('/');
+  const fileName = req.file.originalname;
 
-  // replace original file name with the new file name
-  filePath = filePath.split('/').slice(0, -1).join('/') + '/' + req.file.originalname;
+  fs.saveFile(req.user.username, new MyFile(fileName, fileName, false), fs.getFileData(file, 'binary'));
+
+  res.json({ message: 'File uploaded successfully' });
+});
+
+app.post('/upload-file/:subdirectory', passport.authenticate('jwt', { session: false }), protectRoute, upload.single('file'), (req, res) => {
+  const file = req.file;
+  const subdirectory = req.params.subdirectory;
+
+  if (!file) {
+    return res.status(400).json({ message: 'No file uploaded' });
+  }
+
+  let filePath = subdirectory ? subdirectory + '/' + file.originalname : file.originalname;
 
   const fileName = req.file.originalname;
 

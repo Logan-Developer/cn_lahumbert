@@ -25,7 +25,7 @@ const FileList: React.FC = (props: any) => {
         fetchFiles();
     }, [subdirectory]);
 
-    const handleClickFile = async (event: React.MouseEvent<HTMLAnchorElement>) => {
+    const handleViewDownloadFile = async (event: React.MouseEvent<HTMLAnchorElement>) => {
 
         const path = event.currentTarget.id;
 
@@ -115,6 +115,55 @@ const FileList: React.FC = (props: any) => {
         }
     };
 
+    const handleRenameFile = async (event: React.MouseEvent<HTMLButtonElement>) => {
+        const path = event.currentTarget.id;
+        const fileInfo = files.find((file) => file.path === path);
+
+        if (!fileInfo) {
+            return;
+        }
+
+        const newFileName = prompt('Enter the new file name:', fileInfo.name);
+
+        if (!newFileName) {
+            return;
+        }
+
+        try {
+            await axios.post('/rename-file', {
+                path: path,
+                newFileName: newFileName
+            }, {
+                headers: {
+                    Authorization: `Bearer ${localStorage.getItem('jwtToken')}`
+                }
+            });
+            fetchFiles();
+        } catch (error) {
+            console.error('Error renaming file:', error);
+        }
+    };
+
+    const handleDeleteFile = async (event: React.MouseEvent<HTMLButtonElement>) => {
+        // display a confirmation dialog
+        if (!window.confirm('Are you sure you want to delete this file?')) {
+            return;
+        }
+
+        const path = event.currentTarget.id;
+
+        try {
+            await axios.delete('/delete-file/' + path, {
+                headers: {
+                    Authorization: `Bearer ${localStorage.getItem('jwtToken')}`
+                }
+            });
+            fetchFiles();
+        } catch (error) {
+            console.error('Error deleting file:', error);
+        }
+    };
+
     return (
         <div>
             <Row>
@@ -136,13 +185,19 @@ const FileList: React.FC = (props: any) => {
                     <tr>
                         <th>Filename</th>
                         <th>File Type</th>
+                        <th>Actions</th>
                     </tr>
                 </thead>
                 <tbody>
                     {files.map((file, index) => (
                         <tr key={index}>
-                            <td><a id={file.path} onClick={handleClickFile}>{file.name}</a></td>
+                            <td><a id={file.path} onClick={handleViewDownloadFile}>{file.name}</a></td>
                             <td>{file.type}</td>
+                            <td>
+                                <Button variant="primary" onClick={handleViewDownloadFile} id={file.path}>View/Download</Button>
+                                <Button variant="warning" onClick={handleRenameFile} id={file.path}>Rename</Button>
+                                <Button variant="danger" onClick={handleDeleteFile} id={file.path}>Delete</Button>
+                            </td>
                         </tr>
                     ))}
                 </tbody>

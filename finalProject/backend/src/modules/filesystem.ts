@@ -151,6 +151,28 @@ class MyFileSystem {
 
         this.fs.renameSync(oldFile, newFile);
     }
+
+    deleteFile(username: string, filePath: string) {
+        const userDir = this.path.join(userDirectory, username);
+        const file = this.path.join(userDir, filePath);
+
+        this.fs.unlinkSync(file);
+    }
+
+    deleteDirectory(username: string, directory: string) {
+        const userDir = this.path.join(userDirectory, username);
+        const dir = this.path.join(userDir, directory);
+
+        this.fs.rmdirSync(dir, { recursive: true });
+    }
+
+    renameFile(username: string, oldPath: string, newPath: string) {
+        const userDir = this.path.join(userDirectory, username);
+        const oldFile = this.path.join(userDir, oldPath);
+        const newFile = this.path.join(userDir, newPath);
+
+        this.fs.renameSync(oldFile, newFile);
+    }
 }
 
 export { MyFileSystem, MyFile };

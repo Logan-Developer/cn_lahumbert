@@ -3,7 +3,7 @@ import session from 'express-session';
 import { createUser, findUser, jsonwebtoken, passport, initPassport } from './modules/authentication';
 import cors from 'cors';
 import bcrypt from 'bcryptjs';
-import {MyFileSystem, MyFile} from './modules/filesystem';
+import { MyFileSystem, MyFile } from './modules/filesystem';
 
 const fs = new MyFileSystem();
 
@@ -14,7 +14,7 @@ app.use(cors());
 app.use(express.json());
 
 // upload file
-const multer  = require('multer');
+const multer = require('multer');
 
 const upload = multer({ dest: 'uploads/' });
 
@@ -66,7 +66,7 @@ app.post('/register', async (req, res) => {
     // 4. Respond with success
     return res.json({ message: 'User registered successfully' });
 
-  } catch(error) {
+  } catch (error) {
     console.error(error);
     return res.status(500).json({ message: 'Registration error' });
   }
@@ -84,7 +84,7 @@ const protectRoute = (req: any, res: any, next: any) => {
 app.get('/get-files', passport.authenticate('jwt', { session: false }), protectRoute, (req, res) => {
 
   fs.getUserFiles(req.user.username, null).then((files: MyFile[]) => {
-    res.json({ files: files});
+    res.json({ files: files });
   }, (error: any) => {
     console.error('Error fetching files:', error);
     res.status(500).json({ message: 'Error fetching files' });
@@ -95,7 +95,7 @@ app.get('/get-files/:subdirectory', passport.authenticate('jwt', { session: fals
   const subdirectory = req.params.subdirectory;
 
   fs.getUserFiles(req.user.username, subdirectory).then((files: MyFile[]) => {
-    res.json({ files: files});
+    res.json({ files: files });
   }, (error: any) => {
     console.error('Error fetching files:', error);
     res.status(500).json({ message: 'Error fetching files' });
@@ -265,6 +265,44 @@ app.post('/create-folder', passport.authenticate('jwt', { session: false }), pro
   fs.createDirectory(req.user.username, subdirectory + folderName);
 
   res.json({ message: 'Folder created successfully' });
+});
+
+app.post('/rename-file', passport.authenticate('jwt', { session: false }), protectRoute, (req, res) => {
+  const { path, newFileName } = req.body;
+
+  if (!path || !newFileName) {
+    return res.status(400).json({ message: 'Invalid request' });
+  }
+
+  fs.renameFile(req.user.username, path, newFileName);
+
+  res.json({ message: 'File renamed successfully' });
+});
+
+app.delete('/delete-file/:filePath', passport.authenticate('jwt', { session: false }), protectRoute, (req, res) => {
+  const filePath = req.params.filePath;
+
+  if (!filePath) {
+    return res.status(400).json({ message: 'Invalid file path' });
+  }
+
+  // check if this is a directory
+  const file = fs.getFile(req.user.username, filePath).then((file: MyFile | null) => {
+    if (!file) {
+      return res.status(404).json({ message: 'File not found' });
+    }
+
+    if (file.type === 'directory') {
+      fs.deleteDirectory(req.user.username, filePath);
+    } else {
+      fs.deleteFile(req.user.username, filePath);
+    }
+
+    res.json({ message: 'File deleted successfully' });
+  }, (error: any) => {
+    console.error('Error fetching file:', error);
+    res.status(500).json({ message: 'Error fetching file' });
+  });
 });
 
 // Start the server

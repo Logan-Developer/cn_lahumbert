@@ -2,5 +2,7 @@
 \beamer@sectionintoc {2}{Requirements}{4}{0}{2}
 \beamer@sectionintoc {3}{Development}{5}{0}{3}
 \beamer@subsectionintoc {3}{1}{Technologies used}{5}{0}{3}
-\beamer@sectionintoc {4}{Demo}{6}{0}{4}
-\beamer@sectionintoc {5}{Conclusion}{7}{0}{5}
+\beamer@subsectionintoc {3}{2}{Authentication}{6}{0}{3}
+\beamer@subsectionintoc {3}{3}{Access files}{7}{0}{3}
+\beamer@sectionintoc {4}{Demo}{8}{0}{4}
+\beamer@sectionintoc {5}{Conclusion}{9}{0}{5}

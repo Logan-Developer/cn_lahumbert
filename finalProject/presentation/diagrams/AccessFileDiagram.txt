@@ -17,9 +17,7 @@ alt User not found
   alt File not found
     Server->Client:Send error message
   else File found
-    Server->Server: Generate Token
-    Server->Client: Send token
-    Client->Client: Save token
-    Client->Client: Redirect to home page
+    Server->Client: Check the type of data and send/stream it accordingly
+    Client->Client: Download the data and display it if applicable
   end
 end

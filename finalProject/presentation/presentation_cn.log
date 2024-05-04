@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.141592653-2.6-1.40.25 (MiKTeX 24.1) (preloaded format=pdflatex 2024.4.29)  29 APR 2024 17:22
+This is pdfTeX, Version 3.141592653-2.6-1.40.25 (MiKTeX 24.1) (preloaded format=pdflatex 2024.5.3)  4 MAY 2024 11:33
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
@@ -973,7 +973,7 @@ Dictionary: translator-numbers-dictionary, Language: English
 or-theorem-dictionary-English.dict
 Dictionary: translator-theorem-dictionary, Language: English 
 ) (presentation_cn.nav)
-<./images/cmu_logo.png, id=50, 501.875pt x 501.875pt>
+<./images/cmu_logo.png, id=58, 501.875pt x 501.875pt>
 File: ./images/cmu_logo.png Graphic file (type png)
 <use ./images/cmu_logo.png>
 Package pdftex.def Info: ./images/cmu_logo.png  used on input line 17.
@@ -996,6 +996,10 @@ Package pdftex.def Info: ./images/cmu_logo.png  used on input line 17.
 
 ] [8
 
+] [9
+
+] [10
+
 ]
 \tf@nav=\write6
 \openout6 = `presentation_cn.nav'.
@@ -1012,13 +1016,13 @@ LaTeX2e <2023-11-01> patch level 1
 L3 programming layer <2024-01-04>
  ***********
 Package rerunfilecheck Info: File `presentation_cn.out' has not changed.
-(rerunfilecheck)             Checksum: F786FDE4AF98D1D77720E2C87EB8B7DE;605.
+(rerunfilecheck)             Checksum: 873267DE3406A4C04C7ECE553FE4D7DF;852.
  ) 
 Here is how much of TeX's memory you used:
- 21789 strings out of 474486
- 431829 string characters out of 5741867
+ 21823 strings out of 474486
+ 433187 string characters out of 5741868
  1939542 words of memory out of 5000000
- 43615 multiletter control sequences out of 15000+600000
+ 43643 multiletter control sequences out of 15000+600000
  560494 words of font info for 44 fonts, out of 8000000 for 9000
  1141 hyphenation exceptions out of 8191
  128i,15n,123p,392b,702s stack positions out of 10000i,1000n,20000p,200000b,200000s
@@ -1027,9 +1031,9 @@ Here is how much of TeX's memory you used:
 blic/amsfonts/cm/cmss12.pfb><C:/Users/lahumbert/AppData/Local/Programs/MiKTeX/f
 onts/type1/public/amsfonts/cm/cmss8.pfb><C:/Users/lahumbert/AppData/Local/Progr
 ams/MiKTeX/fonts/type1/public/amsfonts/cm/cmss9.pfb>
-Output written on presentation_cn.pdf (8 pages, 240936 bytes).
+Output written on presentation_cn.pdf (10 pages, 265677 bytes).
 PDF statistics:
- 397 PDF objects out of 1000 (max. 8388607)
- 23 named destinations out of 1000 (max. 500000)
- 408 words of extra memory for PDF output out of 10000 (max. 10000000)
+ 498 PDF objects out of 1000 (max. 8388607)
+ 29 named destinations out of 1000 (max. 500000)
+ 532 words of extra memory for PDF output out of 10000 (max. 10000000)
 

@@ -66,6 +66,55 @@ const FileList: React.FC = (props: any) => {
         setSubdirectory(path.join('/') + '/');
     }
 
+    const handleUpload = () => {
+        // Open a dialog to select a file
+        const input = document.createElement('input');
+        input.type = 'file';
+        input.accept = '*/*';
+        input.name = 'file';
+        input.onchange = async (event: any) => {
+            // upload file as binary
+            const file = event.target.files[0];
+            const formData = new FormData();
+            formData.append('file', file);
+
+            try {
+                await axios.post('/upload-file' + subdirectory, formData, {
+                    headers: {
+                        'Content-Type': 'multipart/form-data',
+                        Authorization: `Bearer ${localStorage.getItem('jwtToken')}`
+                    }
+                });
+                fetchFiles();
+            } catch (error) {
+                console.error('Error uploading file:', error);
+            }
+        };
+        input.click();
+    };
+
+    const handleCreateFolder = async () => {
+        const folderName = prompt('Enter the folder name:');
+
+        if (!folderName) {
+            return;
+        }
+
+        try {
+            await axios.post('/create-folder', {
+                folderName: folderName,
+                subdirectory: subdirectory
+            }, {
+                headers: {
+                    Authorization: `Bearer ${localStorage.getItem('jwtToken')}`
+                }
+            });
+            fetchFiles();
+        } catch (error) {
+            console.error('Error creating folder:', error);
+        }
+    };
+
     return (
         <div>
             <Row>
@@ -74,6 +123,12 @@ const FileList: React.FC = (props: any) => {
                 </Col>
                 <Col xs={6}>
                     <p>Current directory: {subdirectory}</p>
+                </Col>
+                <Col xs={2}>
+                    <Button onClick={() => handleUpload()}>Upload</Button>
+                </Col>
+                <Col xs={2}>
+                    <Button onClick={() => handleCreateFolder()}>Create Folder</Button>
                 </Col>
             </Row>
             <Table striped bordered hover>

@@ -13,12 +13,17 @@ const port = 3000; // You can change the port if needed
 app.use(cors());
 app.use(express.json());
 
+// upload file
+const multer  = require('multer');
+
+const upload = multer({ dest: 'uploads/' });
+
 // Session Configuration
 app.use(session({
   secret: 'your_strong_secret_string', // Replace with a secure string
   resave: false, // Option to optimize session updates
   saveUninitialized: false, // Option to optimize session creation
-  // Add additional options like 'cookie' for security, as needed 
+  // Add additional options like 'cookie' for security, as needed
 }));
 
 // Initialize Passport
@@ -36,7 +41,7 @@ app.post('/login', passport.authenticate('local'), (req, res) => {
     const token = jsonwebtoken.sign({ username: req.user.username }, 'your_jwt_secret');
     res.json({ token });
   } else {
-    res.status(401).json({ message: 'Invalid credentials' }); 
+    res.status(401).json({ message: 'Invalid credentials' });
   }
 });
 
@@ -45,12 +50,12 @@ app.post('/register', async (req, res) => {
 
   try {
     // 1. Check if user exists (Modify according to how you check for existing users)
-    const existingUser = await findUser(username); 
+    const existingUser = await findUser(username);
     if (existingUser) {
       return res.status(400).json({ message: 'Username already taken' });
     }
 
-    // 3. Create new user (adapt to your User model) 
+    // 3. Create new user (adapt to your User model)
     const newUser = await createUser(username, password);
     if (!newUser) {
       return res.status(500).json({ message: 'Registration error' });
@@ -58,11 +63,11 @@ app.post('/register', async (req, res) => {
 
     fs.createUserDataFolder(username);
 
-    // 4. Respond with success 
+    // 4. Respond with success
     return res.json({ message: 'User registered successfully' });
 
   } catch(error) {
-    console.error(error); 
+    console.error(error);
     return res.status(500).json({ message: 'Registration error' });
   }
 });
@@ -219,7 +224,50 @@ app.get('/get-file/:filePath', passport.authenticate('jwt', { session: false }),
   });
 });
 
+app.post('/upload-file', passport.authenticate('jwt', { session: false }), protectRoute, upload.single('file'), (req, res) => {
+  const file = req.file;
+
+  if (!file) {
+    return res.status(400).json({ message: 'No file uploaded' });
+  }
+
+  const fileName = req.file.originalname;
+
+  // move the file from the uploads folder to the user's folder
+  fs.moveFile(req.user.username, '../../uploads/' + file.filename, fileName);
+
+  res.json({ message: 'File uploaded successfully' });
+});
+
+app.post('/upload-file/:subdirectory', passport.authenticate('jwt', { session: false }), protectRoute, upload.single('file'), (req, res) => {
+  const file = req.file;
+  const subdirectory = req.params.subdirectory;
+
+  if (!file) {
+    return res.status(400).json({ message: 'No file uploaded' });
+  }
+
+  let filePath = subdirectory ? subdirectory + '/' + file.originalname : file.originalname;
+
+  // move the file from the uploads folder to the user's folder
+  fs.moveFile(req.user.username, '../../uploads/' + file.filename, filePath);
+
+  res.json({ message: 'File uploaded successfully' });
+});
+
+app.post('/create-folder', passport.authenticate('jwt', { session: false }), protectRoute, (req, res) => {
+  const { folderName, subdirectory } = req.body;
+
+  if (!folderName) {
+    return res.status(400).json({ message: 'Invalid folder name' });
+  }
+
+  fs.createDirectory(req.user.username, subdirectory + folderName);
+
+  res.json({ message: 'Folder created successfully' });
+});
+
 // Start the server
-app.listen(port, () => {
+app.listen(port, '127.0.0.1', () => {
   console.log(`Server listening at http://localhost:${port}`);
 });

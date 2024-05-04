@@ -143,6 +143,14 @@ class MyFileSystem {
     readImage(file: MyFile) {
         return this.fs.readFileSync(file.path);
     }
+
+    moveFile(username: string, oldPath: string, newPath: string) {
+        const userDir = this.path.join(userDirectory, username);
+        const oldFile = this.path.join(userDir, oldPath);
+        const newFile = this.path.join(userDir, newPath);
+
+        this.fs.renameSync(oldFile, newFile);
+    }
 }
 
 export { MyFileSystem, MyFile };

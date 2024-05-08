@@ -123,7 +123,7 @@ const FileList: React.FC = (props: any) => {
             return;
         }
 
-        const newFileName = prompt('Enter the new file name:', fileInfo.name);
+        const newFileName = prompt('Enter the new file name:', fileInfo.name.split('.')[0]);
 
         if (!newFileName) {
             return;

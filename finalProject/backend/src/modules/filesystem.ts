@@ -168,8 +168,11 @@ class MyFileSystem {
 
     renameFile(username: string, oldPath: string, newPath: string) {
         const userDir = this.path.join(userDirectory, username);
+
+        const ext = this.path.extname(oldPath);
+
         const oldFile = this.path.join(userDir, oldPath);
-        const newFile = this.path.join(userDir, newPath);
+        const newFile = this.path.join(userDir, newPath + ext);
 
         this.fs.renameSync(oldFile, newFile);
     }

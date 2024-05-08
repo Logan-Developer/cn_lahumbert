@@ -49,13 +49,17 @@ app.post('/register', async (req, res) => {
   const { username, password } = req.body;
 
   try {
-    // 1. Check if user exists (Modify according to how you check for existing users)
+    // Checks
+    // special characters
+    if (!/^[a-zA-Z][a-zA-Z0-9_]+$/.test(username)) {
+      return res.status(400).json({ message: 'Invalid username, must start with a letter and contain only letters, numbers, and underscores' });
+    }
     const existingUser = await findUser(username);
     if (existingUser) {
       return res.status(400).json({ message: 'Username already taken' });
     }
 
-    // 3. Create new user (adapt to your User model)
+    // Create new user
     const newUser = await createUser(username, password);
     if (!newUser) {
       return res.status(500).json({ message: 'Registration error' });
@@ -63,7 +67,6 @@ app.post('/register', async (req, res) => {
 
     fs.createUserDataFolder(username);
 
-    // 4. Respond with success
     return res.json({ message: 'User registered successfully' });
 
   } catch (error) {
